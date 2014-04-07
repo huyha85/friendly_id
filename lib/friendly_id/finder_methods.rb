@@ -13,6 +13,13 @@ module FriendlyId
     #
     # @see FriendlyId::ObjectUtils
     def find_one(id)
+      encoding_options = {
+        :invalid           => :replace,  # Replace invalid byte sequences
+        :undef             => :replace,  # Replace anything not defined in ASCII
+        :replace           => '',        # Use a blank for those replacements
+        :universal_newline => true       # Always break lines with \n
+      }
+      id = id.encode(Encoding.find('ASCII'), encoding_options)
       return super if id.unfriendly_id?
       where(@klass.friendly_id_config.query_field => id).first or super
     end
@@ -28,6 +35,13 @@ module FriendlyId
     #
     # @see FriendlyId::ObjectUtils
     def exists?(id = false)
+      encoding_options = {
+        :invalid           => :replace,  # Replace invalid byte sequences
+        :undef             => :replace,  # Replace anything not defined in ASCII
+        :replace           => '',        # Use a blank for those replacements
+        :universal_newline => true       # Always break lines with \n
+      }
+      id = id.encode(Encoding.find('ASCII'), encoding_options) unless id
       return super if id.unfriendly_id?
       super @klass.friendly_id_config.query_field => id
     end
